@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int getInt();
+int getIntInput();
+char getCharInput();
 
 #endif

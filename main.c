@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct {
   int accountNumber;
@@ -61,6 +62,7 @@ void stateUpdater(int *pState) {
 void registerNewAccount(int *pState) {
   Account *newAccount;
   newAccount = malloc(sizeof(Account));
+  srand(time(NULL));
   int newAccountNumber = rand() % 99999999;
 
   printf("registering account\n");
@@ -69,12 +71,12 @@ void registerNewAccount(int *pState) {
   scanf("%s", newAccount->holderName);
 
   printf("Enter your PIN(6-digit)\n");
-  newAccount->pin = getInt();
+  newAccount->pin = getIntInput();
 
   printf("Enter the account type that you want to create\n"
          "S: Saving Accounts\n"
          "C: Checking Accounts\n");
-  scanf(" %c", &newAccount->accountType);
+  newAccount->accountType = getCharInput();
 
   newAccount->accountNumber = newAccountNumber;
   newAccount->balance = 0;
