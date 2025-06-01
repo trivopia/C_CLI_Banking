@@ -1,5 +1,7 @@
 #include "utils.h"
+#include <ctype.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,6 +64,7 @@ void stateUpdater(int *pState) {
 void registerNewAccount(int *pState) {
   Account *newAccount;
   newAccount = malloc(sizeof(Account));
+
   srand(time(NULL));
   int newAccountNumber = rand() % 99999999;
 
@@ -76,7 +79,18 @@ void registerNewAccount(int *pState) {
   printf("Enter the account type that you want to create\n"
          "S: Saving Accounts\n"
          "C: Checking Accounts\n");
-  newAccount->accountType = getCharInput();
+
+  while (true) {
+    newAccount->accountType = toupper(getCharInput());
+    if (newAccount->accountType == 'S' || newAccount->accountType == 'C') {
+      break;
+    } else {
+      printf("Invalid choice.\n"
+             "Enter the account type that you want to create\n"
+             "S: Saving Accounts\n"
+             "C: Checking Accounts\n");
+    }
+  }
 
   newAccount->accountNumber = newAccountNumber;
   newAccount->balance = 0;
@@ -97,6 +111,5 @@ void registerNewAccount(int *pState) {
   printf("Congratulation! You successfully created an account.\n"
          "Your initial balance is set to 0\n");
   *pState = 99;
-  while (getchar() != '\n' && getchar() != EOF)
-    ;
+  ;
 }

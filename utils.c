@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,10 +33,14 @@ char getCharInput() {
       exit(EXIT_FAILURE);
     }
 
-    if (sscanf(buffer, "%c", &input)) {
-      return input;
+    if (sscanf(buffer, "%c", &input) == true) {
+      if (isalpha(input)) {
+        return input;
+      } else {
+        printf("Invalid input. Enter a character: ");
+      }
     } else {
-      printf("Invalid input. Enter a character");
+      printf("Invalid input. Enter a character: ");
     }
   }
 }
