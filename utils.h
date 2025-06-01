@@ -7,5 +7,6 @@
 
 int getIntInput();
 char getCharInput();
+void getStringInput(char *str, int maxLength);
 
 #endif

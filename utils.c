@@ -44,3 +44,15 @@ char getCharInput() {
     }
   }
 }
+
+void getStringInput(char *str, int maxLength) {
+  while (true) {
+    if (fgets(str, maxLength, stdin) == NULL) {
+      printf("Error reading input\n");
+      exit(EXIT_FAILURE);
+    } else {
+      str[strcspn(str, "\n")] = '\0';
+      return;
+    }
+  }
+}
