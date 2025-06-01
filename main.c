@@ -69,7 +69,7 @@ void registerNewAccount(int *pState) {
   scanf("%s", newAccount->holderName);
 
   printf("Enter your PIN(6-digit)\n");
-  scanf("%d", &newAccount->pin);
+  newAccount->pin = getInt();
 
   printf("Enter the account type that you want to create\n"
          "S: Saving Accounts\n"
