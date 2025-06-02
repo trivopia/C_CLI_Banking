@@ -8,6 +8,7 @@
 int getIntInput() {
   char buffer[1024];
   int input;
+  char charDetect;
 
   while (true) {
     if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
@@ -15,10 +16,15 @@ int getIntInput() {
       exit(EXIT_FAILURE);
     }
 
-    if (sscanf(buffer, "%d", &input) == true) {
+    buffer[strcspn(buffer, "\n")] = '\0';
+
+    int itemsRead = sscanf(buffer, "%d%c", &input, &charDetect);
+    if (itemsRead == 0) {
+      printf("Invalid input. Please enter a number: ");
+    } else if (itemsRead == 1) {
       return input;
     } else {
-      printf("invalid input. Please enter a number: ");
+      printf("Invalid input. Please enter only numbers: ");
     }
   }
 }
