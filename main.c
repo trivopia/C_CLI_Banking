@@ -102,7 +102,6 @@ void registerNewAccount(int *pState) {
 
   // Getting int input for PIN
   printf("Enter your PIN(6-digit)\n");
-  newAccount->pin = getIntInput();
 
   // Getting char input for accountType
   printf("Enter the account type that you want to create\n"
