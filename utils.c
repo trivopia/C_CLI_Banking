@@ -18,7 +18,7 @@ int getIntInput() {
 
     buffer[strcspn(buffer, "\n")] = '\0';
 
-    int itemsRead = sscanf(buffer, "%d%c", &input, &charDetect);
+    int itemsRead = sscanf(buffer, "%d %c", &input, &charDetect);
     if (itemsRead == 0) {
       printf("Invalid input. Please enter a number: ");
     } else if (itemsRead == 1) {
@@ -51,14 +51,21 @@ char getCharInput() {
   }
 }
 
-void getStringInput(char *str, int maxLength) {
-  while (true) {
-    if (fgets(str, maxLength, stdin) == NULL) {
-      printf("Error reading input\n");
-      exit(EXIT_FAILURE);
-    } else {
-      str[strcspn(str, "\n")] = '\0';
-      return;
-    }
+int getStringInput(char *str, int maxLength) {
+  int c;
+  bool charOverflow = false;
+
+  if (fgets(str, maxLength, stdin) == NULL) {
+    printf("Error Reading Input\n");
+    return -1;
   }
+
+  if (str[strlen(str) - 1] != '\n') {
+    charOverflow = true;
+    while (((c = getchar()) != '\n' && c != EOF))
+      ;
+  }
+
+  str[strcspn(str, "\n")] = '\0';
+  return charOverflow ? 1 : 0;
 }
