@@ -35,3 +35,34 @@ void getHolderName(Account *newAccount) {
     newAccount->holderName[i] = toupper(newAccount->holderName[i]);
   }
 }
+
+void getPin(Account *newAccount) {
+  while (true) {
+    int overFlow;
+    bool flag = true;
+
+    overFlow = getStringInput(newAccount->pin, sizeof(newAccount->pin));
+
+    int pinLength = strlen(newAccount->pin);
+
+    if (pinLength < 6) {
+      printf("Please enter 6 digits\n");
+      flag = false;
+    } else if (overFlow) {
+      printf("Please only enter 6 digits\n");
+      flag = false;
+    } else {
+      for (size_t i = 0; i < pinLength; i++) {
+        if (!isdigit(newAccount->pin[i])) {
+          printf("Please only enter numbers\n");
+          flag = false;
+          break;
+        }
+      }
+    }
+
+    if (flag == true) {
+      break;
+    }
+  }
+}

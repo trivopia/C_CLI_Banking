@@ -68,35 +68,7 @@ void registerNewAccount(int *pState) {
 
   // Getting string input for PIN (mimicking real world situation)
   printf("Enter your PIN(6-digit)\n");
-
-  while (true) {
-    int overFlow;
-    bool flag = true;
-
-    overFlow = getStringInput(newAccount->pin, sizeof(newAccount->pin));
-
-    int pinLength = strlen(newAccount->pin);
-
-    if (pinLength < 6) {
-      printf("Please enter 6 digits\n");
-      flag = false;
-    } else if (overFlow) {
-      printf("Please only enter 6 digits\n");
-      flag = false;
-    } else {
-      for (size_t i = 0; i < pinLength; i++) {
-        if (!isdigit(newAccount->pin[i])) {
-          printf("Please only enter numbers\n");
-          flag = false;
-          break;
-        }
-      }
-    }
-
-    if (flag == true) {
-      break;
-    }
-  }
+  getPin(newAccount);
 
   // Getting char input for accountType
   printf("Enter the account type that you want to create\n"

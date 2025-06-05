@@ -14,5 +14,6 @@ typedef struct {
 } Account;
 
 void getHolderName(Account *newAccount);
+void getPin(Account *newAccount);
 
 #endif
