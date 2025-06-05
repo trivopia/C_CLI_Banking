@@ -74,14 +74,7 @@ void registerNewAccount(int *pState) {
   printf("Enter the account type that you want to create\n"
          "S: Saving Accounts\n"
          "C: Checking Accounts\n");
-  while (true) {
-    newAccount->accountType = toupper(getCharInput());
-    if (newAccount->accountType == 'S' || newAccount->accountType == 'C') {
-      break;
-    } else {
-      printf("Invalid choice. Please select a valid account type\n");
-    }
-  }
+  getAccountType(newAccount);
 
   // Randomizing accountNumber and setting initial balance to 0
   newAccount->accountNumber = newAccountNumber;

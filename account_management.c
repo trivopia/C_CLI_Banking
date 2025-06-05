@@ -66,3 +66,14 @@ void getPin(Account *newAccount) {
     }
   }
 }
+
+void getAccountType(Account *newAccount) {
+  while (true) {
+    newAccount->accountType = toupper(getCharInput());
+    if (newAccount->accountType == 'S' || newAccount->accountType == 'C') {
+      break;
+    } else {
+      printf("Invalid choice. Please select a valid account type\n");
+    }
+  }
+}
