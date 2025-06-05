@@ -30,6 +30,7 @@
         "-g",
         "main.c",
         "utils.c",
+        "account_management.c",
         "-o",
         "banking_app",
         "-Wall",
