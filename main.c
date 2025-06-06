@@ -9,15 +9,18 @@
 #include <time.h>
 
 // Function Prototypes
-void stateUpdater(int *pState);
+void stateUpdater(int *pState, int cases[], size_t numCases);
 void registerNewAccount(int *pState);
 
 int main() {
   int state = 99;
   int *pState = &state;
 
+  int cases[] = {1, 2, 98};
+  size_t numCases = sizeof(cases) / sizeof(cases[0]);
+
   while (state) {
-    stateUpdater(pState);
+    stateUpdater(pState, cases, numCases);
     switch (state) {
     case 1:
       registerNewAccount(pState);
@@ -33,22 +36,27 @@ int main() {
 }
 
 // Function for updating state
-void stateUpdater(int *pState) {
-  char buffer[1024];
-  int choice = 0;
-
+void stateUpdater(int *pState, int cases[], size_t numCases) {
   printf("\nChoose an action\n"
          "1. Register New Account\n"
          "2. Exit Program\n");
 
-  if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-    perror("Error in reading input");
-    *pState = 0;
-    return;
-  }
+  while (true) {
+    *pState = getIntInput();
+    bool caseFound = false;
 
-  if (sscanf(buffer, "%d", &choice) == 1) {
-    *pState = choice;
+    for (size_t i = 0; i < numCases; i++) {
+      if (*pState == cases[i]) {
+        caseFound = true;
+        break;
+      }
+    }
+
+    if (!caseFound) {
+      printf("Please enter a valid case\n");
+    } else {
+      break;
+    }
   }
 }
 
