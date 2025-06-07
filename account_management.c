@@ -77,3 +77,28 @@ void getAccountType(Account *newAccount) {
     }
   }
 }
+
+void testStrTok() {
+  FILE *pFile = fopen("./dataBase/account_info.csv", "r");
+  if (pFile == NULL) {
+    perror("Could not open file\n");
+    return;
+  }
+
+  char buffer[1024];
+
+  // Skipping header
+  if (fgets(buffer, sizeof(buffer), pFile) == NULL) {
+    printf("Error reading file content");
+    return;
+  }
+
+  while (fgets(buffer, sizeof(buffer), pFile) != NULL) {
+    printf("buffer %s", buffer);
+
+    char *myPtr = strtok(buffer, ",");
+    printf("%s\n", myPtr);
+  }
+
+  fclose(pFile);
+}
