@@ -69,3 +69,39 @@ int getStringInput(char *str, int maxLength) {
   str[strcspn(str, "\n")] = '\0';
   return charOverflow ? 1 : 0;
 }
+
+int getLineCount(char fileName[]) {
+  long fileSize;
+  int lineCounts = 0;
+  int c;
+
+  FILE *pFile = fopen(fileName, "r");
+  if (pFile == NULL) {
+    perror("Could not open file\n");
+    return -1;
+  }
+
+  fseek(pFile, 0, SEEK_END);
+  fileSize = ftell(pFile);
+
+  if (fileSize == 0) {
+    printf("File is empty");
+    fclose(pFile);
+    return 0;
+  }
+
+  fseek(pFile, 0, SEEK_SET);
+  while ((c = fgetc(pFile)) != EOF) {
+    if (c == '\n') {
+      lineCounts++;
+    }
+  }
+
+  if (fileSize > 0 && c != '\n') {
+    lineCounts++;
+  }
+
+  fclose(pFile);
+
+  return lineCounts;
+}

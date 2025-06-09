@@ -95,7 +95,7 @@ void registerNewAccount(int *pState) {
     return;
   }
 
-  fprintf(pFile, "%d,%s,%s,%c\n", newAccount->accountNumber,
+  fprintf(pFile, "\n%d,%s,%s,%c", newAccount->accountNumber,
           newAccount->holderName, newAccount->pin, newAccount->accountType);
 
   fclose(pFile);

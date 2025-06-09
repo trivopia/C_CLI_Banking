@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 int main() {
-  testStrTok();
+  int counts;
+  counts = getLineCount("./dataBase/account_info.csv");
+  printf("%d\n", counts);
   return 0;
 }
