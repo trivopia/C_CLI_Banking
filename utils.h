@@ -8,6 +8,6 @@
 int getIntInput();
 char getCharInput();
 int getStringInput(char *str, int maxLength);
-int getLineCount(char fileName[]);
+int getLineCount(char filePath[]);
 
 #endif

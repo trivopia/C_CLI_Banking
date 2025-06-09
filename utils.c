@@ -70,12 +70,12 @@ int getStringInput(char *str, int maxLength) {
   return charOverflow ? 1 : 0;
 }
 
-int getLineCount(char fileName[]) {
+int getLineCount(char filePath[]) {
   long fileSize;
   int lineCounts = 0;
   int c;
 
-  FILE *pFile = fopen(fileName, "r");
+  FILE *pFile = fopen(filePath, "r");
   if (pFile == NULL) {
     perror("Could not open file\n");
     return -1;
@@ -85,7 +85,7 @@ int getLineCount(char fileName[]) {
   fileSize = ftell(pFile);
 
   if (fileSize == 0) {
-    printf("File is empty");
+    printf("File is empty\n");
     fclose(pFile);
     return 0;
   }

@@ -1,10 +1,12 @@
 #include "account_management.h"
 #include "utils.h"
 #include <ctype.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 void getHolderName(Account *newAccount) {
   while (true) {
@@ -78,27 +80,95 @@ void getAccountType(Account *newAccount) {
   }
 }
 
-void testStrTok() {
+int generateAccountNumber(Account *newAccount) {
+  int totalLines = getLineCount("./dataBase/account_info.csv");
+  if (totalLines == -1) {
+    printf("Could not open file\n");
+    return -1;
+  }
+
+  int totalAccounts = totalLines - 1;
+  if (totalAccounts == 0) {
+    char firstAccount[10 + 1] = "0000000000";
+    strcpy(newAccount->accountNumber, firstAccount);
+    return 0;
+  }
+
+  char(*existingAccounts)[10 + 1] =
+      malloc(totalAccounts * sizeof(char[10 + 1]));
+  if (existingAccounts == NULL) {
+    perror("Unable to allocate memory for existing accounts");
+    return -1;
+  }
+
   FILE *pFile = fopen("./dataBase/account_info.csv", "r");
   if (pFile == NULL) {
-    perror("Could not open file\n");
-    return;
+    perror("File could not be opened");
+    free(existingAccounts);
+    return -1;
   }
 
   char buffer[1024];
 
-  // Skipping header
-  if (fgets(buffer, sizeof(buffer), pFile) == NULL) {
-    printf("Error reading file content");
-    return;
+  // Call to skip the header
+  fgets(buffer, sizeof(buffer), pFile);
+
+  for (size_t i = 0; i < totalAccounts; i++) {
+
+    if (fgets(buffer, sizeof(buffer), pFile) == NULL) {
+      printf("Failed reading file content from line %ld\n", i + 1);
+      free(existingAccounts);
+      fclose(pFile);
+      return -1;
+    }
+
+    buffer[strcspn(buffer, "\n")] = '\0';
+
+    char *token = strtok(buffer, ",");
+    if (token != NULL) {
+      strcpy(existingAccounts[i], token);
+    } else {
+      printf("Failed to tokenize line %ld\n", i + 1);
+      free(existingAccounts);
+      fclose(pFile);
+      return -1;
+    }
   }
 
-  while (fgets(buffer, sizeof(buffer), pFile) != NULL) {
-    printf("buffer %s", buffer);
+  // Generate new unique 8-digit account number
+  int loopGuard = 999999;
+  int attempts = 0;
 
-    char *myPtr = strtok(buffer, ",");
-    printf("%s\n", myPtr);
+  while (true) {
+    attempts++;
+    if (attempts == loopGuard) {
+      printf("Failed to generate a unique account number\n");
+      free(existingAccounts);
+      fclose(pFile);
+      return -1;
+    }
+
+    bool flag = true;
+    long long int randNum;
+    char numberCandidate[10 + 1];
+
+    randNum = rand() % 1000000000;
+    sprintf(numberCandidate, "%010lld", randNum);
+
+    for (size_t i = 0; i < totalAccounts; i++) {
+      if (strcmp(numberCandidate, existingAccounts[i]) == 0) {
+        flag = false;
+        break;
+      }
+    }
+
+    if (flag == true) {
+      strcpy(newAccount->accountNumber, numberCandidate);
+      break;
+    }
   }
 
+  free(existingAccounts);
   fclose(pFile);
+  return 0;
 }

@@ -5,10 +5,10 @@
 #include <string.h>
 
 typedef struct {
-  int accountNumber;
+  char accountNumber[10 + 1];
   char pin[6 + 2];
   long double balance;
-  char holderName[100 + 1];
+  char holderName[100 + 2];
   char accountType;
 
 } Account;
@@ -16,6 +16,6 @@ typedef struct {
 void getHolderName(Account *newAccount);
 void getPin(Account *newAccount);
 void getAccountType(Account *newAccount);
-void testStrTok();
+int generateAccountNumber(Account *newAccount);
 
 #endif

@@ -13,6 +13,8 @@ void stateUpdater(int *pState, int cases[], size_t numCases);
 void registerNewAccount(int *pState);
 
 int main() {
+  srand(time(NULL));
+
   int state = 99;
   int *pState = &state;
 
@@ -65,9 +67,6 @@ void registerNewAccount(int *pState) {
   Account *newAccount;
   newAccount = malloc(sizeof(Account));
 
-  srand(time(NULL));
-  int newAccountNumber = rand() % 99999999;
-
   printf("registering account\n");
 
   // Getting string input for holderName
@@ -84,10 +83,17 @@ void registerNewAccount(int *pState) {
          "C: Checking Accounts\n");
   getAccountType(newAccount);
 
-  // Randomizing accountNumber and setting initial balance to 0
-  newAccount->accountNumber = newAccountNumber;
+  // Generating random unique 10-digit account number
+  signed int errorCode = generateAccountNumber(newAccount);
+  if (errorCode == -1) {
+    printf("System Error\n");
+    return;
+  }
+
+  // Setting initial balance to 0.0
   newAccount->balance = 0.0;
 
+  // Appending new account info to account_info.csv file
   FILE *pFile = fopen("./dataBase/account_info.csv", "a");
   if (pFile == NULL) {
     perror("Could not open file\n");
@@ -95,7 +101,7 @@ void registerNewAccount(int *pState) {
     return;
   }
 
-  fprintf(pFile, "\n%d,%s,%s,%c", newAccount->accountNumber,
+  fprintf(pFile, "\n%s,%s,%s,%c", newAccount->accountNumber,
           newAccount->holderName, newAccount->pin, newAccount->accountType);
 
   fclose(pFile);
