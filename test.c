@@ -2,7 +2,4 @@
 #include "utils.h"
 #include <stdio.h>
 
-int main() {
-  generateAccountNumber();
-  return 0;
-}
+int main() { return 0; }

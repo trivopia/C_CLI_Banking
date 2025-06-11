@@ -91,24 +91,44 @@ void registerNewAccount(int *pState) {
   }
 
   // Setting initial balance to 0.0
-  newAccount->balance = 0.0;
+
+  if (strcmp(newAccount->accountNumber, "0000000000") == 0) {
+    newAccount->balance = 9999999999;
+  } else {
+    newAccount->balance = 0.0;
+  }
 
   // Appending new account info to account_info.csv file
-  FILE *pFile = fopen("./dataBase/account_info.csv", "a");
-  if (pFile == NULL) {
+  FILE *pFile1 = fopen("./dataBase/account_info.csv", "a");
+  if (pFile1 == NULL) {
     perror("Could not open file\n");
     *pState = 0;
     return;
   }
 
-  fprintf(pFile, "\n%s,%s,%s,%c", newAccount->accountNumber,
+  FILE *pFile2 = fopen("./dataBase/account_balance.csv", "a");
+  if (pFile2 == NULL) {
+    perror("Could not open file\n");
+    return;
+  }
+
+  fprintf(pFile1, "\n%s,%s,%s,%c", newAccount->accountNumber,
           newAccount->holderName, newAccount->pin, newAccount->accountType);
 
-  fclose(pFile);
-  free(newAccount);
+  fprintf(pFile2, "\n%s, %.2Lf", newAccount->accountNumber,
+          newAccount->balance);
 
-  printf("Congratulation! You successfully created an account.\n"
-         "Your initial balance is set to 0.00\n");
+  if (strcmp(newAccount->accountNumber, "0000000000") == 0) {
+    printf("Congratulation! You successfully created a MASTER account.\n"
+           "Your initial balance is set to 9999999999.00\n");
+  } else {
+    printf("Congratulation! You successfully created an account.\n"
+           "Your initial balance is set to 0.00\n");
+  }
+
+  fclose(pFile1);
+  fclose(pFile2);
+  free(newAccount);
   *pState = 99;
   ;
 }
