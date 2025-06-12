@@ -75,6 +75,7 @@ void registerNewAccount(int *pState) {
 
   // Getting string input for PIN (mimicking real world situation)
   printf("Enter your PIN(6-digit)\n");
+  hashPin(newAccount);
 
   // Getting char input for accountType
   printf("Enter the account type that you want to create\n"
@@ -115,8 +116,7 @@ void registerNewAccount(int *pState) {
           newAccount->holderName, newAccount->pinHash, newAccount->pinSalt,
           newAccount->accountType);
 
-  fprintf(pFile2, "\n%s, %.2Lf", newAccount->accountNumber,
-          newAccount->balance);
+  fprintf(pFile2, "\n%s,%.2Lf", newAccount->accountNumber, newAccount->balance);
 
   if (strcmp(newAccount->accountNumber, "0000000000") == 0) {
     printf("Congratulation! You successfully created a MASTER account.\n"

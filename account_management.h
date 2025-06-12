@@ -26,6 +26,7 @@ typedef struct {
 
 void getHolderName(Account *pAccount);
 void getPin(char *pinInput, int bufferLength);
+void hashPin(Account *pAccount);
 void getAccountType(Account *pAccount);
 int generateAccountNumber(Account *pAccount);
 

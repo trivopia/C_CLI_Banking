@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Input validation related utilities
 int getIntInput() {
   char buffer[1024];
   int input;
@@ -73,7 +72,49 @@ int getStringInput(char *str, int maxLength) {
   return charOverflow ? 1 : 0;
 }
 
-// File related utilities
+int generateRandomSalt(unsigned char *saltBuffer) {
+  if (RAND_bytes(saltBuffer, SALT_LENGTH_BYTES) != 1) {
+    printf("Error: Failed to generate random salt");
+    return -1;
+  }
+  return 0;
+}
+
+void binToHex(const unsigned char *bin, size_t binLength, char *hex) {
+  for (size_t i = 0; i < binLength; i++) {
+    sprintf(&hex[i * 2], "%02x", bin[i]);
+  }
+  hex[binLength * 2] = '\0';
+}
+
+void hexToBin(const char *hex, size_t hexLength, unsigned char *bin) {
+  for (size_t i = 0; i < hexLength / 2; i++) {
+    sscanf(hex + (i * 2), "%02hhx", &bin[i]);
+  }
+}
+
+void hashPinInputWithSalt(const char *pinInput, const unsigned char *saltBin,
+                          char *hashHexOutput) {
+  size_t totalLength = PIN_LENGTH + SALT_LENGTH_BYTES;
+
+  unsigned char *dataToHash = malloc(totalLength);
+  if (dataToHash == NULL) {
+    perror("Error: could not allocate memory for hashing\n");
+    exit(EXIT_FAILURE);
+  }
+
+  memcpy(dataToHash, pinInput, PIN_LENGTH);
+  memcpy(dataToHash + PIN_LENGTH, saltBin, SALT_LENGTH_BYTES);
+
+  unsigned char hashBin[SHA256_DIGEST_LENGTH];
+
+  SHA256(dataToHash, totalLength, hashBin);
+
+  binToHex(hashBin, SHA256_DIGEST_LENGTH, hashHexOutput);
+
+  free(dataToHash);
+}
+
 int getLineCount(char filePath[]) {
   long fileSize;
   int lineCounts = 0;
@@ -110,44 +151,7 @@ int getLineCount(char filePath[]) {
   return lineCounts;
 }
 
-// Hashing related utilities
-int generateRandomSalt(unsigned char *saltBuffer) {
-  if (RAND_bytes(saltBuffer, SALT_LENGTH_BYTES) != 1) {
-    printf("Error: Failed to generate random salt");
-    return -1;
-  }
-  return 0;
-}
-
-void binToHex(const unsigned char *bin, size_t binLength, char *hex) {
-  for (size_t i = 0; i < binLength; i++) {
-    sprintf(&hex[i * 2], "%02x", bin[i]);
-  }
-  hex[binLength * 2] = '\0';
-}
-
-void hexToBin(const char *hex, size_t hexLength, unsigned char *bin) {
-  for (size_t i = 0; i < hexLength / 2; i++) {
-    sscanf(hex + (i * 2), "%02hhx", &bin[i]);
-  }
-}
-
-void hashPinWithSalt(const char *pinInput, const unsigned char *saltBin,
-                     char *hashHexOutput) {
-  size_t totalLength = PIN_LENGTH + SALT_LENGTH_BYTES;
-  unsigned char *dataToHash = malloc(totalLength);
-  if (dataToHash == NULL) {
-    perror("Error: could not allocate memory for hashing\n");
-    exit(EXIT_FAILURE);
-  }
-  memcpy(dataToHash, pinInput, PIN_LENGTH);
-  memcpy(dataToHash + PIN_LENGTH, saltBin, SALT_LENGTH_BYTES);
-
-  unsigned char hashBin[SHA256_DIGEST_LENGTH];
-
-  SHA256(dataToHash, totalLength, hashBin);
-
-  binToHex(hashBin, SHA224_DIGEST_LENGTH, hashHexOutput);
-
-  free(dataToHash);
+void clearScreen() {
+  printf("\033[2J\033[H");
+  fflush(stdout);
 }

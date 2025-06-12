@@ -66,10 +66,21 @@ void getPin(char *pinInput, int bufferLength) {
     }
 
     if (flag == true) {
-      printf("%s\n", pinInput);
       return;
     }
   }
+}
+
+void hashPin(Account *pAccount) {
+  char pinInput[PIN_LENGTH + 2];
+  getPin(pinInput, sizeof(pinInput));
+
+  unsigned char saltBuffer[SALT_LENGTH_BYTES];
+  generateRandomSalt(saltBuffer);
+
+  binToHex(saltBuffer, SALT_LENGTH_BYTES, pAccount->pinSalt);
+
+  hashPinInputWithSalt(pinInput, saltBuffer, pAccount->pinHash);
 }
 
 void getAccountType(Account *pAccount) {
