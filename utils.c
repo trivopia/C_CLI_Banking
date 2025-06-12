@@ -20,6 +20,8 @@ int getIntInput() {
 
     buffer[strcspn(buffer, "\n")] = '\0';
 
+    // why not use isdigit()? because it is too complicated. i would have to
+    // parse around each element
     int itemsRead = sscanf(buffer, "%d %c", &input, &charDetect);
     if (itemsRead == 0) {
       printf("Invalid input. Please enter a number: ");
@@ -53,15 +55,18 @@ char getCharInput() {
   }
 }
 
+// this function returns 1 if the input is more than desired
 int getStringInput(char *str, int maxLength) {
   int c;
-  bool charOverflow = false;
+  bool charOverflow = false; // this is to detect if the input is more than
+                             // desired length (maxLength - 2)
 
   if (fgets(str, maxLength, stdin) == NULL) {
     printf("Error Reading Input\n");
     return -1;
   }
 
+  // checks if the last element is \n. if it is, consume it
   if (str[strlen(str) - 1] != '\n') {
     charOverflow = true;
     while (((c = getchar()) != '\n' && c != EOF))
@@ -72,6 +77,7 @@ int getStringInput(char *str, int maxLength) {
   return charOverflow ? 1 : 0;
 }
 
+// param 0 is a binary of salt
 int generateRandomSalt(unsigned char *saltBuffer) {
   if (RAND_bytes(saltBuffer, SALT_LENGTH_BYTES) != 1) {
     printf("Error: Failed to generate random salt");
@@ -82,14 +88,17 @@ int generateRandomSalt(unsigned char *saltBuffer) {
 
 void binToHex(const unsigned char *bin, size_t binLength, char *hex) {
   for (size_t i = 0; i < binLength; i++) {
-    sprintf(&hex[i * 2], "%02x", bin[i]);
+    sprintf(
+        hex + (i * 2), "%02x",
+        bin[i]); // hex + (i*2) meaning 2 hex for each byte and zero for padding
   }
   hex[binLength * 2] = '\0';
 }
 
 void hexToBin(const char *hex, size_t hexLength, unsigned char *bin) {
-  for (size_t i = 0; i < hexLength / 2; i++) {
-    sscanf(hex + (i * 2), "%02hhx", &bin[i]);
+  for (size_t i = 0; i < hexLength / 2;
+       i++) { // i < hexLength / 2 because 2 hex = 1 byte
+    sscanf(hex + (i * 2), "%02hhx", bin + i);
   }
 }
 
@@ -103,6 +112,8 @@ void hashPinInputWithSalt(const char *pinInput, const unsigned char *saltBin,
     exit(EXIT_FAILURE);
   }
 
+  // using memcpy to copy raw memory for any data type. And it does'nt stop at
+  // null terminator
   memcpy(dataToHash, pinInput, PIN_LENGTH);
   memcpy(dataToHash + PIN_LENGTH, saltBin, SALT_LENGTH_BYTES);
 
@@ -126,6 +137,7 @@ int getLineCount(char filePath[]) {
     return -1;
   }
 
+  // to check if file is empty
   fseek(pFile, 0, SEEK_END);
   fileSize = ftell(pFile);
 
@@ -135,6 +147,7 @@ int getLineCount(char filePath[]) {
     return 0;
   }
 
+  // the line counting logic
   fseek(pFile, 0, SEEK_SET);
   while ((c = fgetc(pFile)) != EOF) {
     if (c == '\n') {
@@ -142,6 +155,7 @@ int getLineCount(char filePath[]) {
     }
   }
 
+  // for the last line
   if (fileSize > 0 && c != '\n') {
     lineCounts++;
   }
@@ -152,6 +166,6 @@ int getLineCount(char filePath[]) {
 }
 
 void clearScreen() {
-  printf("\033[2J\033[H");
+  printf("\033[2J\033[H"); // a way for clearing UNIX system CLI
   fflush(stdout);
 }
