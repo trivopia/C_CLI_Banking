@@ -13,6 +13,7 @@ void stateUpdater(int *pState, int cases[], size_t numCases);
 void registerNewAccount(int *pState);
 
 int main() {
+  clearScreen();
   srand(time(NULL));
 
   int state = 99;
@@ -25,9 +26,11 @@ int main() {
     stateUpdater(pState, cases, numCases);
     switch (state) {
     case 1:
+      clearScreen();
       registerNewAccount(pState);
       break;
     case 2:
+      clearScreen();
       exit(EXIT_SUCCESS);
       break;
     default:
@@ -72,16 +75,19 @@ void registerNewAccount(int *pState) {
   // Getting string input for holderName
   printf("Enter your name\n");
   getHolderName(newAccount);
+  clearScreen();
 
   // Getting string input for PIN (mimicking real world situation)
   printf("Enter your PIN(6-digit)\n");
   hashPin(newAccount);
+  clearScreen();
 
   // Getting char input for accountType
   printf("Enter the account type that you want to create\n"
          "S: Saving Accounts\n"
          "C: Checking Accounts\n");
   getAccountType(newAccount);
+  clearScreen();
 
   // Generating random unique 10-digit account number
   signed int errorCode = generateAccountNumber(newAccount);
