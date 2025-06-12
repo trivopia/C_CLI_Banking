@@ -2,25 +2,27 @@
 #include "utils.h"
 #include <ctype.h>
 #include <math.h>
+#include <openssl/rand.h>
+#include <openssl/sha.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-void getHolderName(Account *newAccount) {
+void getHolderName(Account *pAccount) {
   while (true) {
     bool flag = true;
 
-    getStringInput(newAccount->holderName, sizeof(newAccount->holderName));
+    getStringInput(pAccount->holderName, sizeof(pAccount->holderName));
 
-    if (newAccount->holderName[0] == '\0') {
+    if (pAccount->holderName[0] == '\0') {
       printf("Invalid input. Please enter your name\n");
       flag = false;
     } else {
-      for (int i = 0; newAccount->holderName[i] != '\0'; i++) {
-        if (!isalpha(newAccount->holderName[i]) &&
-            !isspace(newAccount->holderName[i])) {
+      for (int i = 0; pAccount->holderName[i] != '\0'; i++) {
+        if (!isalpha(pAccount->holderName[i]) &&
+            !isspace(pAccount->holderName[i])) {
           printf("Invalid input. Please enter your name\n");
           flag = false;
           break;
@@ -33,29 +35,29 @@ void getHolderName(Account *newAccount) {
     }
   }
 
-  for (int i = 0; newAccount->holderName[i] != '\0'; i++) {
-    newAccount->holderName[i] = toupper(newAccount->holderName[i]);
+  for (int i = 0; pAccount->holderName[i] != '\0'; i++) {
+    pAccount->holderName[i] = toupper(pAccount->holderName[i]);
   }
 }
 
-void getPin(Account *newAccount) {
+void getPin(char *pinInput, int bufferLength) {
   while (true) {
     int overFlow;
     bool flag = true;
 
-    overFlow = getStringInput(newAccount->pin, sizeof(newAccount->pin));
+    overFlow = getStringInput(pinInput, bufferLength);
 
-    int pinLength = strlen(newAccount->pin);
+    int inputLength = strlen(pinInput);
 
-    if (pinLength < 6) {
+    if (inputLength < 6) {
       printf("Please enter 6 digits\n");
       flag = false;
     } else if (overFlow) {
       printf("Please only enter 6 digits\n");
       flag = false;
     } else {
-      for (size_t i = 0; i < pinLength; i++) {
-        if (!isdigit(newAccount->pin[i])) {
+      for (size_t i = 0; i < inputLength; i++) {
+        if (!isdigit(pinInput[i])) {
           printf("Please only enter numbers\n");
           flag = false;
           break;
@@ -64,15 +66,16 @@ void getPin(Account *newAccount) {
     }
 
     if (flag == true) {
-      break;
+      printf("%s\n", pinInput);
+      return;
     }
   }
 }
 
-void getAccountType(Account *newAccount) {
+void getAccountType(Account *pAccount) {
   while (true) {
-    newAccount->accountType = toupper(getCharInput());
-    if (newAccount->accountType == 'S' || newAccount->accountType == 'C') {
+    pAccount->accountType = toupper(getCharInput());
+    if (pAccount->accountType == 'S' || pAccount->accountType == 'C') {
       break;
     } else {
       printf("Invalid choice. Please select a valid account type\n");
@@ -80,7 +83,7 @@ void getAccountType(Account *newAccount) {
   }
 }
 
-int generateAccountNumber(Account *newAccount) {
+int generateAccountNumber(Account *pAccount) {
   int totalLines = getLineCount("./dataBase/account_info.csv");
   if (totalLines == -1) {
     printf("Could not open file\n");
@@ -90,7 +93,7 @@ int generateAccountNumber(Account *newAccount) {
   int totalAccounts = totalLines - 1;
   if (totalAccounts == 0) {
     char firstAccount[10 + 1] = "0000000000";
-    strcpy(newAccount->accountNumber, firstAccount);
+    strcpy(pAccount->accountNumber, firstAccount);
     return 0;
   }
 
@@ -163,7 +166,7 @@ int generateAccountNumber(Account *newAccount) {
     }
 
     if (flag == true) {
-      strcpy(newAccount->accountNumber, numberCandidate);
+      strcpy(pAccount->accountNumber, numberCandidate);
       break;
     }
   }

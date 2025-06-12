@@ -2,4 +2,9 @@
 #include "utils.h"
 #include <stdio.h>
 
-int main() { return 0; }
+int main() {
+  printf("Input pin: ");
+  char pinInput[PIN_LENGTH + 2];
+  getPin(pinInput, sizeof(pinInput));
+  return 0;
+}

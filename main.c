@@ -62,7 +62,7 @@ void stateUpdater(int *pState, int cases[], size_t numCases) {
   }
 }
 
-// Function for updating new account to the account_info.csv
+// Function for registering new account
 void registerNewAccount(int *pState) {
   Account *newAccount;
   newAccount = malloc(sizeof(Account));
@@ -75,7 +75,6 @@ void registerNewAccount(int *pState) {
 
   // Getting string input for PIN (mimicking real world situation)
   printf("Enter your PIN(6-digit)\n");
-  getPin(newAccount);
 
   // Getting char input for accountType
   printf("Enter the account type that you want to create\n"
@@ -112,8 +111,9 @@ void registerNewAccount(int *pState) {
     return;
   }
 
-  fprintf(pFile1, "\n%s,%s,%s,%c", newAccount->accountNumber,
-          newAccount->holderName, newAccount->pin, newAccount->accountType);
+  fprintf(pFile1, "\n%s,%s,%s,%s,%c", newAccount->accountNumber,
+          newAccount->holderName, newAccount->pinHash, newAccount->pinSalt,
+          newAccount->accountType);
 
   fprintf(pFile2, "\n%s, %.2Lf", newAccount->accountNumber,
           newAccount->balance);
@@ -132,3 +132,7 @@ void registerNewAccount(int *pState) {
   *pState = 99;
   ;
 }
+
+// Function for log in
+// Function for transfer
+// Function for deleting account

@@ -14,7 +14,8 @@
         "-o",
         "banking_app",
         "-Wall",
-        "-Werror"
+        "-Werror",
+        "-lcrypto"
       ],
       "options": {
         "cwd": "${fileDirname}"
@@ -36,7 +37,8 @@
         "-o",
         "test",
         "-Wall",
-        "-Werror"
+        "-Werror",
+        "-lcrypto"
       ],
       "options": {
         "cwd": "${fileDirname}"
