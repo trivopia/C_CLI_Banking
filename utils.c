@@ -113,7 +113,7 @@ void hashPinInputWithSalt(const char *pinInput, const unsigned char *saltBin,
   }
 
   // using memcpy to copy raw memory for any data type. And it does'nt stop at
-  // null terminator
+  // Null terminator
   memcpy(dataToHash, pinInput, PIN_LENGTH);
   memcpy(dataToHash + PIN_LENGTH, saltBin, SALT_LENGTH_BYTES);
 

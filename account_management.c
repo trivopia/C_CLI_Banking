@@ -101,15 +101,17 @@ int generateAccountNumber(Account *pAccount) {
     return -1;
   }
 
+  // For the master account
   int totalAccounts = totalLines - 1;
   if (totalAccounts == 0) {
-    char firstAccount[10 + 1] = "0000000000";
+    char firstAccount[ACCOUNT_NUMBER_LENGTH + 1] = "0000000000";
     strcpy(pAccount->accountNumber, firstAccount);
     return 0;
   }
 
-  char(*existingAccounts)[10 + 1] =
-      malloc(totalAccounts * sizeof(char[10 + 1]));
+  // Creating pointers to string array memory blocks
+  char(*existingAccounts)[ACCOUNT_NUMBER_LENGTH + 1] =
+      malloc(totalAccounts * sizeof(char[ACCOUNT_NUMBER_LENGTH + 1]));
   if (existingAccounts == NULL) {
     perror("Unable to allocate memory for existing accounts");
     return -1;
@@ -128,7 +130,6 @@ int generateAccountNumber(Account *pAccount) {
   fgets(buffer, sizeof(buffer), pFile);
 
   for (size_t i = 0; i < totalAccounts; i++) {
-
     if (fgets(buffer, sizeof(buffer), pFile) == NULL) {
       printf("Failed reading file content from line %ld\n", i + 1);
       free(existingAccounts);
@@ -138,6 +139,7 @@ int generateAccountNumber(Account *pAccount) {
 
     buffer[strcspn(buffer, "\n")] = '\0';
 
+    // tokenizing and copying the first element from each line
     char *token = strtok(buffer, ",");
     if (token != NULL) {
       strcpy(existingAccounts[i], token);
@@ -150,10 +152,13 @@ int generateAccountNumber(Account *pAccount) {
   }
 
   // Generate new unique 8-digit account number
+  // Attempts are limited due to performance issue
   int loopGuard = 999999;
   int attempts = 0;
 
   while (true) {
+    bool flag = true;
+
     attempts++;
     if (attempts == loopGuard) {
       printf("Failed to generate a unique account number\n");
@@ -162,12 +167,12 @@ int generateAccountNumber(Account *pAccount) {
       return -1;
     }
 
-    bool flag = true;
-    long long int randNum;
-    char numberCandidate[10 + 1];
-
-    randNum = rand() % 1000000000;
-    sprintf(numberCandidate, "%010lld", randNum);
+    // + '0' to make the digits into ASCII chars
+    char numberCandidate[ACCOUNT_NUMBER_LENGTH + 1];
+    for (size_t i = 0; i < ACCOUNT_NUMBER_LENGTH; i++) {
+      numberCandidate[i] = '0' + rand() % 10;
+    }
+    numberCandidate[10] = '\0';
 
     for (size_t i = 0; i < totalAccounts; i++) {
       if (strcmp(numberCandidate, existingAccounts[i]) == 0) {

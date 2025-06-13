@@ -77,7 +77,7 @@ void registerNewAccount(int *pState) {
   getHolderName(newAccount);
   clearScreen();
 
-  // Getting string input for PIN (mimicking real world situation)
+  // Getting string input and hashing for pin
   printf("Enter your PIN(6-digit)\n");
   hashPin(newAccount);
   clearScreen();
