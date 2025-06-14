@@ -78,7 +78,7 @@ void registerNewAccount(int *pState) {
   clearScreen();
 
   // Getting user id
-  printf("Enter USER ID(10-characters)");
+  printf("Enter USER ID(10-characters)\n");
   getUserID(newAccount);
   clearScreen();
 

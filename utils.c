@@ -43,6 +43,14 @@ char getCharInput() {
       exit(EXIT_FAILURE);
     }
 
+    if (strchr(buffer, '\n') == NULL) {
+      int c;
+      while ((c = getchar()) != '\n' && c != EOF)
+        ;
+      printf("Input too long. Enter a single character]\n");
+      continue;
+    }
+
     if (sscanf(buffer, "%c", &input) == true) {
       if (isalpha(input)) {
         return input;
@@ -63,23 +71,25 @@ int getStringInput(char *str, int maxLength) {
     exit(EXIT_FAILURE);
   }
 
-  buffer[strcspn(buffer, "\n")] = '\0';
-
-  int inputLength;
-  inputLength = strlen(buffer);
-
-  int lengthCompare;
-  if (inputLength < maxLength - 1) {
-    lengthCompare = -1;
-    strncpy(str, buffer, maxLength);
-  } else if (inputLength == maxLength - 1) {
-    lengthCompare = 0;
-    strncpy(str, buffer, maxLength);
-  } else if (inputLength > maxLength - 1) {
-    lengthCompare = 1;
+  if (strchr(buffer, '\n') == NULL) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+      ;
+    return 1;
   }
 
-  return lengthCompare;
+  buffer[strcspn(buffer, "\n")] = '\0';
+  int inputLength = strlen(buffer);
+
+  if (inputLength < maxLength - 1) {
+    strncpy(str, buffer, maxLength);
+    return -1;
+  } else if (inputLength == maxLength - 1) {
+    strncpy(str, buffer, maxLength);
+    return 0;
+  } else {
+    return 1;
+  }
 }
 
 // param 0 is a binary of salt
