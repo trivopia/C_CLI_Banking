@@ -55,26 +55,31 @@ char getCharInput() {
   }
 }
 
-// this function returns 1 if the input is more than desired
 int getStringInput(char *str, int maxLength) {
-  int c;
-  bool charOverflow = false; // this is to detect if the input is more than
-                             // desired length (maxLength - 2)
+  char buffer[1024];
 
-  if (fgets(str, maxLength, stdin) == NULL) {
+  if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
     printf("Error Reading Input\n");
-    return -1;
+    exit(EXIT_FAILURE);
   }
 
-  // checks if the last element is \n. if it is, consume it
-  if (str[strlen(str) - 1] != '\n') {
-    charOverflow = true;
-    while (((c = getchar()) != '\n' && c != EOF))
-      ;
+  buffer[strcspn(buffer, "\n")] = '\0';
+
+  int inputLength;
+  inputLength = strlen(buffer);
+
+  int lengthCompare;
+  if (inputLength < maxLength - 1) {
+    lengthCompare = -1;
+    strncpy(str, buffer, maxLength);
+  } else if (inputLength == maxLength - 1) {
+    lengthCompare = 0;
+    strncpy(str, buffer, maxLength);
+  } else if (inputLength > maxLength - 1) {
+    lengthCompare = 1;
   }
 
-  str[strcspn(str, "\n")] = '\0';
-  return charOverflow ? 1 : 0;
+  return lengthCompare;
 }
 
 // param 0 is a binary of salt

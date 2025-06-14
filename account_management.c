@@ -14,10 +14,14 @@ void getHolderName(Account *pAccount) {
   while (true) {
     bool flag = true;
 
-    getStringInput(pAccount->holderName, sizeof(pAccount->holderName));
+    int returnResult =
+        getStringInput(pAccount->holderName, sizeof(pAccount->holderName));
 
     if (pAccount->holderName[0] == '\0') {
       printf("Invalid input. Please enter your name\n");
+      flag = false;
+    } else if (returnResult == 1) {
+      printf("Input too long! Please enter your name\n");
       flag = false;
     } else {
       for (int i = 0; pAccount->holderName[i] != '\0'; i++) {
@@ -42,21 +46,18 @@ void getHolderName(Account *pAccount) {
 
 void getPin(char *pinInput, int bufferLength) {
   while (true) {
-    int overFlow;
     bool flag = true;
 
-    overFlow = getStringInput(pinInput, bufferLength);
+    int returnResult = getStringInput(pinInput, bufferLength);
 
-    int inputLength = strlen(pinInput);
-
-    if (inputLength < 6) {
+    if (returnResult == -1) {
       printf("Please enter 6 digits\n");
       flag = false;
-    } else if (overFlow) {
+    } else if (returnResult == 1) {
       printf("Please only enter 6 digits\n");
       flag = false;
     } else {
-      for (size_t i = 0; i < inputLength; i++) {
+      for (size_t i = 0; i < PIN_LENGTH; i++) {
         if (!isdigit(pinInput[i])) {
           printf("Please only enter numbers\n");
           flag = false;
@@ -72,7 +73,7 @@ void getPin(char *pinInput, int bufferLength) {
 }
 
 void hashPin(Account *pAccount) {
-  char pinInput[PIN_LENGTH + 2];
+  char pinInput[PIN_LENGTH + 1];
   getPin(pinInput, sizeof(pinInput));
 
   unsigned char saltBuffer[SALT_LENGTH_BYTES];

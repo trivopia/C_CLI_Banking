@@ -20,7 +20,7 @@ typedef struct {
   char pinHash[HASH_LENGTH_HEX + 1];
   char pinSalt[SALT_LENGTH_HEX + 1];
   long double balance;
-  char holderName[HOLDER_NAME_MAX + 2];
+  char holderName[HOLDER_NAME_MAX + 1];
   char accountType;
 } Account;
 
