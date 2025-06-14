@@ -42,7 +42,7 @@ int main() {
 
 // Function for updating state
 void stateUpdater(int *pState, int cases[], size_t numCases) {
-  printf("\nChoose an action\n"
+  printf("Choose an action\n"
          "1. Register New Account\n"
          "2. Exit Program\n");
 
@@ -75,6 +75,11 @@ void registerNewAccount(int *pState) {
   // Getting string input for holderName
   printf("Enter your name\n");
   getHolderName(newAccount);
+  clearScreen();
+
+  // Getting user id
+  printf("Enter USER ID(10-characters)");
+  getUserID(newAccount);
   clearScreen();
 
   // Getting string input and hashing for pin
@@ -118,9 +123,9 @@ void registerNewAccount(int *pState) {
     return;
   }
 
-  fprintf(pFile1, "\n%s,%s,%s,%s,%c", newAccount->accountNumber,
-          newAccount->holderName, newAccount->pinHash, newAccount->pinSalt,
-          newAccount->accountType);
+  fprintf(pFile1, "\n%s,%s,%s,%s,%s,%c", newAccount->accountNumber,
+          newAccount->holderName, newAccount->userID, newAccount->pinHash,
+          newAccount->pinSalt, newAccount->accountType);
 
   fprintf(pFile2, "\n%s,%.2Lf", newAccount->accountNumber, newAccount->balance);
 

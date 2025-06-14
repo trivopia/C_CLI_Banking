@@ -17,11 +17,11 @@ void getHolderName(Account *pAccount) {
     int returnResult =
         getStringInput(pAccount->holderName, sizeof(pAccount->holderName));
 
-    if (pAccount->holderName[0] == '\0') {
-      printf("Invalid input. Please enter your name\n");
-      flag = false;
-    } else if (returnResult == 1) {
+    if (returnResult == 1) {
       printf("Input too long! Please enter your name\n");
+      flag = false;
+    } else if (pAccount->holderName[0] == '\0') {
+      printf("Invalid input. Please enter your name\n");
       flag = false;
     } else {
       for (int i = 0; pAccount->holderName[i] != '\0'; i++) {
@@ -41,6 +41,27 @@ void getHolderName(Account *pAccount) {
 
   for (int i = 0; pAccount->holderName[i] != '\0'; i++) {
     pAccount->holderName[i] = toupper(pAccount->holderName[i]);
+  }
+}
+
+void getUserID(Account *pAccount) {
+  while (true) {
+    bool flag = true;
+
+    int returnResult =
+        getStringInput(pAccount->userID, sizeof(pAccount->userID));
+
+    if (returnResult == 1) {
+      printf("Too long! please enter only 10 characters.\n");
+      flag = false;
+    } else if (pAccount->userID[0] == '\0') {
+      printf("Invalid input. Please enter user ID\n");
+      flag = false;
+    }
+
+    if (flag) {
+      return;
+    }
   }
 }
 
