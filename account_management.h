@@ -8,6 +8,7 @@
 
 enum {
   ACCOUNT_NUMBER_LENGTH = 10,
+  USER_ID_LENGTH = 10,
   PIN_LENGTH = 6,
   HASH_LENGTH_HEX = SHA256_DIGEST_LENGTH * 2,
   SALT_LENGTH_BYTES = 16,
@@ -17,6 +18,7 @@ enum {
 
 typedef struct {
   char accountNumber[ACCOUNT_NUMBER_LENGTH + 1];
+  char userID[USER_ID_LENGTH + 1];
   char pinHash[HASH_LENGTH_HEX + 1];
   char pinSalt[SALT_LENGTH_HEX + 1];
   long double balance;
