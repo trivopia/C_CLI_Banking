@@ -11,7 +11,7 @@
 // Function Prototypes
 void stateUpdater(int *pState, int cases[], size_t numCases);
 void registerNewAccount(int *pState);
-
+void logIn(int *pState);
 int main() {
   clearScreen();
   srand(time(NULL));
@@ -19,7 +19,7 @@ int main() {
   int state = 99;
   int *pState = &state;
 
-  int cases[] = {1, 2, 98};
+  int cases[] = {1, 2, 3, 4, 98};
   size_t numCases = sizeof(cases) / sizeof(cases[0]);
 
   while (state) {
@@ -30,6 +30,10 @@ int main() {
       registerNewAccount(pState);
       break;
     case 2:
+      clearScreen();
+      logIn(pState);
+      break;
+    case 3:
       clearScreen();
       exit(EXIT_SUCCESS);
       break;
@@ -44,7 +48,8 @@ int main() {
 void stateUpdater(int *pState, int cases[], size_t numCases) {
   printf("Choose an action\n"
          "1. Register New Account\n"
-         "2. Exit Program\n");
+         "2. Log In\n"
+         "3. Exit Program\n");
 
   while (true) {
     *pState = getIntInput();
@@ -102,7 +107,6 @@ void registerNewAccount(int *pState) {
   }
 
   // Setting initial balance to 0.0
-
   if (strcmp(newAccount->accountNumber, "0000000000") == 0) {
     newAccount->balance = 9999999999;
   } else {
@@ -113,7 +117,7 @@ void registerNewAccount(int *pState) {
   FILE *pFile1 = fopen("./dataBase/account_info.csv", "a");
   if (pFile1 == NULL) {
     perror("Could not open file\n");
-    *pState = 0;
+    *pState = 99;
     return;
   }
 
@@ -141,7 +145,63 @@ void registerNewAccount(int *pState) {
   fclose(pFile2);
   free(newAccount);
   *pState = 99;
-  ;
+}
+
+void logIn(int *pState) {
+
+  // Get all file info
+
+  FILE *pFile = fopen("./dataBase/account_info.csv", "r");
+  if (pFile == NULL) {
+    printf("Error opening file\n");
+    exit(EXIT_FAILURE);
+  }
+
+  int totalAccounts = getLineCount("./dataBase/account_info.csv") - 1;
+
+  Account *existingAccounts = malloc(sizeof(Account) * totalAccounts);
+
+  char buffer[1024];
+
+  // skip header
+  fgets(buffer, sizeof(buffer), pFile);
+
+  for (size_t i = 0; i < totalAccounts; i++) {
+    fgets(buffer, sizeof(buffer), pFile);
+
+    char *token = strtok(buffer, ",");
+    strcpy((existingAccounts + i)->accountNumber, token);
+
+    token = strtok(NULL, ",");
+    strcpy((existingAccounts + i)->holderName, token);
+
+    token = strtok(NULL, ",");
+    strcpy((existingAccounts + i)->userID, token);
+
+    token = strtok(NULL, ",");
+    strcpy((existingAccounts + i)->pinHash, token);
+
+    token = strtok(NULL, ",");
+    strcpy((existingAccounts + i)->pinSalt, token);
+
+    token = strtok(NULL, ",");
+    (existingAccounts + i)->accountType = token[0];
+  }
+
+  for (size_t i = 0; i < totalAccounts; i++) {
+    printf("%s\n%s\n%s\n%s\n%s\n%c\n", (existingAccounts + i)->accountNumber,
+           (existingAccounts + i)->holderName, (existingAccounts + i)->userID,
+           (existingAccounts + i)->pinHash, (existingAccounts + i)->pinSalt,
+           (existingAccounts + i)->accountType);
+  }
+
+  fclose(pFile);
+
+  *pState = 99;
+  // Check for userID
+  // Check for PIN
+
+  // printf post-logIn options screen
 }
 
 // Function for log in
