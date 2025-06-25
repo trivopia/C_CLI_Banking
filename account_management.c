@@ -213,3 +213,92 @@ int generateAccountNumber(Account *pAccount) {
   fclose(pFile);
   return 0;
 }
+
+void loadAllAccountInfo(Account *accountBuffer, int totalAccounts) {
+  FILE *pFile = fopen("./dataBase/account_info.csv", "r");
+  if (pFile == NULL) {
+    printf("Error opening file\n");
+    exit(EXIT_FAILURE);
+  }
+
+  char buffer[1024];
+
+  // skip header
+  fgets(buffer, sizeof(buffer), pFile);
+  buffer[strcspn(buffer, "\n")] = '\0';
+
+  for (size_t i = 0; i < totalAccounts; i++) {
+    fgets(buffer, sizeof(buffer), pFile);
+    buffer[strcspn(buffer, "\n")] = '\0';
+
+    char *token = strtok(buffer, ",");
+    strcpy((accountBuffer + i)->accountNumber, token);
+
+    token = strtok(NULL, ",");
+    strcpy((accountBuffer + i)->holderName, token);
+
+    token = strtok(NULL, ",");
+    strcpy((accountBuffer + i)->userID, token);
+
+    token = strtok(NULL, ",");
+    strcpy((accountBuffer + i)->pinHash, token);
+
+    token = strtok(NULL, ",");
+    strcpy((accountBuffer + i)->pinSalt, token);
+
+    token = strtok(NULL, ",");
+    (accountBuffer + i)->accountType = token[0];
+  }
+
+  fclose(pFile);
+}
+
+int checkUserID(Account *logInBuffer, Account *existingAccounts,
+                int totalAccounts, int *pAccountIndex) {
+  printf("Input your USER ID: ");
+  getUserID(logInBuffer);
+  bool idMatch = false;
+
+  for (size_t i = 0; i < totalAccounts; i++) {
+    if (strcmp(logInBuffer->userID, (existingAccounts + i)->userID) == 0) {
+      *pAccountIndex = i;
+      idMatch = true;
+      break;
+    }
+  }
+
+  if (idMatch) {
+    clearScreen();
+    printf("USER ID: %s\n", logInBuffer->userID);
+    return 1;
+  } else {
+    clearScreen();
+    printf("USER ID: %s\n", logInBuffer->userID);
+    return 0;
+  }
+}
+
+int checkUserPIN(Account *existingAccounts, int *pAccountIndex,
+                 Account *logInBuffer) {
+  char pinInput[PIN_LENGTH + 1];
+  printf("Input your PIN: ");
+  getPin(pinInput, sizeof(pinInput));
+
+  if (*pAccountIndex == -1) {
+    return 0;
+  };
+
+  unsigned char saltBuffer[SALT_LENGTH_BYTES];
+  hexToBin((existingAccounts + *pAccountIndex)->pinSalt, SALT_LENGTH_HEX,
+           saltBuffer);
+
+  hashPinInputWithSalt(pinInput, saltBuffer, logInBuffer->pinHash);
+
+  if (strcmp(logInBuffer->pinHash,
+             (existingAccounts + *pAccountIndex)->pinHash) == 0) {
+    clearScreen();
+    return 1;
+  } else {
+    return 0;
+  }
+}

@@ -184,3 +184,4 @@ void clearScreen() {
   printf("\033[2J\033[H"); // a way for clearing UNIX system CLI
   fflush(stdout);
 }
+

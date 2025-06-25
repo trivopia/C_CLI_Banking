@@ -32,5 +32,9 @@ void getPin(char *pinInput, int bufferLength);
 void hashPin(Account *pAccount);
 void getAccountType(Account *pAccount);
 int generateAccountNumber(Account *pAccount);
-
+void loadAllAccountInfo(Account *accountBuffer, int totalAccounts);
+int checkUserID(Account *logInBuffer, Account *existingAccounts,
+                int totalAccounts, int *pAccountIndex);
+int checkUserPIN(Account *existingAccounts, int *pAccountIndex,
+                 Account *logInBuffer);
 #endif

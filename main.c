@@ -11,7 +11,8 @@
 // Function Prototypes
 void stateUpdater(int *pState, int cases[], size_t numCases);
 void registerNewAccount(int *pState);
-void logIn(int *pState);
+void logIn(int *pState, int *pAccountIndex, Account *existingAccounts,
+           int totalAccounts);
 int userActionTab();
 
 int main() {
@@ -34,8 +35,16 @@ int main() {
       break;
     case 2:
       clearScreen();
-      logIn(pState);
-      userActionTab();
+      int totalAccounts = getLineCount("./dataBase/account_info.csv") - 1;
+      Account *existingAccounts = malloc(sizeof(Account) * totalAccounts);
+
+      int accountIndex = -1;
+      int *pAccountIndex = &accountIndex;
+
+      logIn(pState, pAccountIndex, existingAccounts, totalAccounts);
+      userActionTab(accountIndex, existingAccounts, totalAccounts);
+
+      free(existingAccounts);
       exit(EXIT_SUCCESS);
       break;
     case 3:
@@ -153,106 +162,38 @@ void registerNewAccount(int *pState) {
 }
 
 // Function for log in
-void logIn(int *pState) {
+void logIn(int *pState, int *pAccountIndex, Account *existingAccounts,
+           int totalAccounts) {
 
-  // Get all file info
-  FILE *pFile = fopen("./dataBase/account_info.csv", "r");
-  if (pFile == NULL) {
-    printf("Error opening file\n");
-    exit(EXIT_FAILURE);
-  }
-
-  int totalAccounts = getLineCount("./dataBase/account_info.csv") - 1;
-  Account *existingAccounts = malloc(sizeof(Account) * totalAccounts);
-
-  char buffer[1024];
-
-  // skip header
-  fgets(buffer, sizeof(buffer), pFile);
-  buffer[strcspn(buffer, "\n")] = '\0';
-
-  for (size_t i = 0; i < totalAccounts; i++) {
-    fgets(buffer, sizeof(buffer), pFile);
-    buffer[strcspn(buffer, "\n")] = '\0';
-
-    char *token = strtok(buffer, ",");
-    strcpy((existingAccounts + i)->accountNumber, token);
-
-    token = strtok(NULL, ",");
-    strcpy((existingAccounts + i)->holderName, token);
-
-    token = strtok(NULL, ",");
-    strcpy((existingAccounts + i)->userID, token);
-
-    token = strtok(NULL, ",");
-    strcpy((existingAccounts + i)->pinHash, token);
-
-    token = strtok(NULL, ",");
-    strcpy((existingAccounts + i)->pinSalt, token);
-
-    token = strtok(NULL, ",");
-    (existingAccounts + i)->accountType = token[0];
-  }
-
-  // Check ID
+  loadAllAccountInfo(existingAccounts, totalAccounts);
   Account *logInBuffer = malloc(sizeof(Account));
-  int accountIndex = -1;
-  bool idMatch = false;
+
+  int idCheckResult = -1;
+  int psCheckResult = -1;
 
   while (true) {
-    printf("Input your USER ID: ");
-    getUserID(logInBuffer);
+    idCheckResult = checkUserID(logInBuffer, existingAccounts, totalAccounts,
+                                pAccountIndex);
 
-    for (size_t i = 0; i < totalAccounts; i++) {
-      if (strcmp(logInBuffer->userID, (existingAccounts + i)->userID) == 0) {
-        accountIndex = i;
-        idMatch = true;
-        break;
-      }
-    }
+    psCheckResult = checkUserPIN(existingAccounts, pAccountIndex, logInBuffer);
 
-    if (idMatch) {
-      clearScreen();
-      printf("USER ID: %s\n", logInBuffer->userID);
-      break;
+    if (idCheckResult == 1 && psCheckResult == 1) {
+      free(logInBuffer);
+      return;
     } else {
       clearScreen();
-      printf("ID not found\n");
-    }
-  }
-
-  // Check pin
-  while (true) {
-    char pinInput[PIN_LENGTH + 1];
-    printf("Input your PIN: ");
-    getPin(pinInput, sizeof(pinInput));
-
-    unsigned char saltBuffer[SALT_LENGTH_BYTES];
-    hexToBin((existingAccounts + accountIndex)->pinSalt, SALT_LENGTH_HEX,
-             saltBuffer);
-
-    hashPinInputWithSalt(pinInput, saltBuffer, logInBuffer->pinHash);
-
-    if (strcmp(logInBuffer->pinHash,
-               (existingAccounts + accountIndex)->pinHash) == 0) {
-      clearScreen();
-      printf("Welcome %s!\n", (existingAccounts + accountIndex)->holderName);
-      break;
-    } else {
-      clearScreen();
-      printf("Wrong PIN\n");
-      printf("USER ID: %s\n", logInBuffer->userID);
+      printf("Wrong USER ID or PIN\n"
+             "Please try again\n");
     }
   }
 
   free(logInBuffer);
-  free(existingAccounts);
-  fclose(pFile);
-
-  *pState = 99;
+  return;
 }
 
-int userActionTab() {
+int userActionTab(int accountIndex, Account *existingAccounts,
+                  int totalAccounts) {
+  printf("Welcome, %s\n", (existingAccounts + accountIndex)->holderName);
   printf("Choose an action\n"
          "1. Deposit\n"
          "2. Transfer\n"
